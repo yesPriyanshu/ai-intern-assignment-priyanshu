@@ -1,0 +1,234 @@
+{
+  "name": "workflow-b1-lead-notification.json",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "student-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a9788126-3cc9-4a87-8805-db5e90a9f0ae",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        128
+      ],
+      "webhookId": "62781cdb-5ecf-498d-8858-ed45d0a2d2c7"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "studentName",
+              "value": "={{ $json.body.fullName }}"
+            },
+            {
+              "name": "studentEmail",
+              "value": "={{ $json.body.email }}"
+            },
+            {
+              "name": "courseLevel",
+              "value": "={{ $json.body.courseLevel }}"
+            },
+            {
+              "name": "studentMessage",
+              "value": "={{ $json.body.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2a3d5b78-8b08-42ad-827e-69ff9a854b70",
+      "name": "Extract & Rename Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.courseLevel }}",
+              "operation": "regex",
+              "value2": "^(PG|PhD)$"
+            }
+          ]
+        }
+      },
+      "id": "fe18d93d-da9f-41c3-b4dc-0fd4705e8db2",
+      "name": "IF - PG or PhD?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Zw80Bz7ud4QxZubgz-9nAxHRKSgHlCAuO-PDGswY4nc",
+          "mode": "list",
+          "cachedResultName": "UG Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zw80Bz7ud4QxZubgz-9nAxHRKSgHlCAuO-PDGswY4nc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zw80Bz7ud4QxZubgz-9nAxHRKSgHlCAuO-PDGswY4nc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "eddd2642-d63f-45f6-a801-4948850b78a2",
+      "name": "Log to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        0,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LmYhGFvY7t3ZEGY6",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "notes": "Replace YOUR_GOOGLE_SHEET_ID_HERE with your actual Google Sheet ID. Or replace this with a No-Op node if you don't have Google Sheets access."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Lead received' }) }}",
+        "options": {}
+      },
+      "id": "628face6-6dc7-4004-b854-fec43a6eebb3",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "fiwib99386@tatefarm.com",
+        "subject": "=New High-Priority Lead: {{ $json.studentName }}",
+        "message": "=<!DOCTYPE html>\n<html>\n<body style=\"font-family: Arial, sans-serif; color: #333; line-height: 1.5;\">\n\n  <p><strong>🚨 New Student Interest Alert</strong></p>\n\n  <p>\n    <strong>{{ $json.studentName }}</strong> is interested in studying at\n    <strong>{{ $json.body.preferredUniversity }}</strong> ({{ $json.body.country }}).\n  </p>\n\n  <p>\n    <strong>Message:</strong><br>\n    {{ $json.studentMessage }}\n  </p>\n\n  <p>\n    <strong>Contact:</strong><br>\n    <a href=\"mailto:{{ $json.studentEmail }}\">\n      {{ $json.studentEmail }}\n    </a>\n  </p>\n\n  <br>\n\n  <p>\n    Thanks,<br>\n    Priyanshu<br>\n    Automation Team\n  </p>\n\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "6a4d6bd2-f5bc-46da-94d8-6a1975e96151",
+      "name": "Send a message",
+      "webhookId": "2c3a5f6d-7447-4895-85f4-6ad4a8c961e8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jUhjRPwsono44K53",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract & Rename Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract & Rename Fields": {
+      "main": [
+        [
+          {
+            "node": "IF - PG or PhD?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - PG or PhD?": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2653787a-3015-45aa-a5d9-9a066a9ba988",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "21a61ffbf78751d1d0efddbc934565466beae5750b27404d017e493a64ee2176"
+  },
+  "id": "27UEyTpycMklx3MX",
+  "tags": []
+}
