@@ -1,0 +1,140 @@
+{
+  "name": "workflow-b2-scheduled-fetch.json",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "6dbad9ca-06ad-489f-ba36-c6d338d8ca28",
+      "name": "Schedule Trigger (9am Daily)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "notes": "Fires every day at 9:00 AM"
+    },
+    {
+      "parameters": {
+        "url": "http://universities.hipolabs.com/search?country=United+Kingdom",
+        "options": {}
+      },
+      "id": "b41189f8-e103-4b24-ac56-62b265cf50a0",
+      "name": "HTTP Request - Fetch Universities",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        240,
+        0
+      ],
+      "notes": "Calls the free Hipolabs Universities API. Returns a list of UK universities as JSON."
+    },
+    {
+      "parameters": {
+        "jsCode": "// The API returns an array of university objects.\n// Each object has: name, country, domains[], web_pages[]\n// We will:\n//   1. Filter to only universities that have a web page\n//   2. Pick the first 10 results\n//   3. Return clean labelled objects\n\nconst raw = $input.all();\n\n// The HTTP node returns one item whose json is the parsed array\nconst universities = raw[0].json;\n\n// Filter: must have at least one web page\nconst filtered = universities.filter(u => u.web_pages && u.web_pages.length > 0);\n\n// Take first 10 only\nconst top10 = filtered.slice(0, 10);\n\n// Map to clean structure\nconst result = top10.map(u => ({\n  universityName: u.name,\n  country: u.country,\n  website: u.web_pages[0],\n  domain: u.domains[0] || 'N/A'\n}));\n\n// Return array of items (n8n expects array of {json: ...})\nreturn result.map(item => ({ json: item }));"
+      },
+      "id": "c560bf97-4f14-4589-aff0-a75d0a1f3ea2",
+      "name": "Code - Filter & Transform",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "notes": "Filters universities that have a website. Picks first 10. Renames fields clearly."
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "University Name",
+              "value": "={{ $json.universityName }}"
+            },
+            {
+              "name": "Country",
+              "value": "={{ $json.country }}"
+            },
+            {
+              "name": "Website",
+              "value": "={{ $json.website }}"
+            },
+            {
+              "name": "Domain",
+              "value": "={{ $json.domain }}"
+            },
+            {
+              "name": "Fetched At",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4b630e77-db95-4ae0-b07e-e7a350161d1c",
+      "name": "Set - Clean Labelled Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "notes": "Adds a timestamp and ensures all fields have human-readable labels."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger (9am Daily)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Fetch Universities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Fetch Universities": {
+      "main": [
+        [
+          {
+            "node": "Code - Filter & Transform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Filter & Transform": {
+      "main": [
+        [
+          {
+            "node": "Set - Clean Labelled Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c1f00d74-43ec-4692-9e5e-f9c93969e484",
+  "meta": {
+    "instanceId": "21a61ffbf78751d1d0efddbc934565466beae5750b27404d017e493a64ee2176"
+  },
+  "id": "BOAXvjqU42vjF10r",
+  "tags": []
+}
