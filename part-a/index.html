@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Lead Capture Form</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #f4f1eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #d9d3c7;
+      border-radius: 6px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .card-header {
+      margin-bottom: 28px;
+      border-bottom: 2px solid #2e6b4f;
+      padding-bottom: 16px;
+    }
+
+    .card-header h1 {
+      font-size: 1.5rem;
+      color: #1a1a1a;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .card-header p {
+      font-size: 0.9rem;
+      color: #6b6b6b;
+      margin-top: 4px;
+      font-family: Arial, sans-serif;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: bold;
+      color: #2b2b2b;
+      margin-bottom: 6px;
+      font-family: Arial, sans-serif;
+    }
+
+    label .required {
+      color: #c0392b;
+      margin-left: 3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #c8c2b8;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-family: Arial, sans-serif;
+      color: #1a1a1a;
+      background: #fdfcfa;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #2e6b4f;
+      background: #fff;
+    }
+
+    input.error,
+    select.error,
+    textarea.error {
+      border-color: #c0392b;
+      background: #fff8f8;
+    }
+
+    .error-msg {
+      color: #c0392b;
+      font-size: 0.8rem;
+      margin-top: 4px;
+      display: none;
+      font-family: Arial, sans-serif;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 0.9rem;
+      color: #2b2b2b;
+    }
+
+    .radio-option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2e6b4f;
+      cursor: pointer;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .char-counter {
+      text-align: right;
+      font-size: 0.78rem;
+      color: #888;
+      margin-top: 4px;
+      font-family: Arial, sans-serif;
+      transition: color 0.2s;
+    }
+
+    .char-counter.warning {
+      color: #e67e22;
+    }
+
+    .char-counter.limit {
+      color: #c0392b;
+      font-weight: bold;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: #2e6b4f;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .submit-btn:hover {
+      background: #245840;
+    }
+
+    .submit-btn:active {
+      background: #1c4631;
+    }
+
+    #thank-you {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    #thank-you .tick {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    #thank-you h2 {
+      font-size: 1.4rem;
+      color: #2e6b4f;
+      margin-bottom: 8px;
+    }
+
+    #thank-you p {
+      color: #555;
+      font-family: Arial, sans-serif;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 500px) {
+      .card {
+        padding: 24px 18px;
+      }
+
+      .radio-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- FORM SECTION -->
+  <div id="form-section">
+    <div class="card-header">
+      <h1>Student Enquiry Form</h1>
+      <p>Fill in your details and we'll get back to you shortly.</p>
+    </div>
+
+    <form id="leadForm" novalidate>
+
+      <!-- Full Name -->
+      <div class="form-group">
+        <label for="fullName">Full Name <span class="required">*</span></label>
+        <input
+          type="text"
+          id="fullName"
+          placeholder="e.g. Priyanshu Raj"
+          maxlength="100"
+        />
+        <div class="error-msg" id="fullName-error">Please enter your full name.</div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address <span class="required">*</span></label>
+        <input
+          type="email"
+          id="email"
+          placeholder="e.g. priyanshu@email.com"
+        />
+        <div class="error-msg" id="email-error">Please enter a valid email address.</div>
+      </div>
+
+      <!-- Country -->
+      <div class="form-group">
+        <label for="country">Country <span class="required">*</span></label>
+        <select id="country">
+          <option value="">-- Select your country --</option>
+          <option>India</option>
+          <option>United Kingdom</option>
+          <option>United States</option>
+          <option>Canada</option>
+          <option>Australia</option>
+          <option>Germany</option>
+          <option>France</option>
+          <option>Singapore</option>
+          <option>UAE</option>
+          <option>Other</option>
+        </select>
+        <div class="error-msg" id="country-error">Please select your country.</div>
+      </div>
+
+      <!-- Course Level (Radio) -->
+      <div class="form-group">
+        <label>Course Level <span class="required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="courseLevel" value="UG" /> Undergraduate (UG)
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="courseLevel" value="PG" /> Postgraduate (PG)
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="courseLevel" value="PhD" /> PhD
+          </label>
+        </div>
+        <div class="error-msg" id="courseLevel-error">Please select your course level.</div>
+      </div>
+
+      <!-- Preferred University -->
+      <div class="form-group">
+        <label for="university">Preferred University <span class="required">*</span></label>
+        <input
+          type="text"
+          id="university"
+          placeholder="e.g. University of Oxford"
+          maxlength="150"
+        />
+        <div class="error-msg" id="university-error">Please enter your preferred university.</div>
+      </div>
+
+
+      <div class="form-group">
+        <label for="message">Message <span class="required">*</span></label>
+        <textarea
+          id="message"
+          placeholder="Tell us about your study goals..."
+          maxlength="300"
+        ></textarea>
+        <div class="char-counter" id="charCounter">0 / 300 characters</div>
+        <div class="error-msg" id="message-error">Please enter a message (min 10 characters).</div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="submit-btn">Submit Enquiry</button>
+
+    </form>
+  </div>
+
+  
+  <div id="thank-you">
+    <div class="tick">✅</div>
+    <h2>Thank You!</h2>
+    <p>Your enquiry has been received. We'll be in touch soon.<br>
+    Check your browser console to see the submitted data.</p>
+  </div>
+
+</div>
+
+<script>
+
+  const messageBox = document.getElementById('message');
+  const charCounter = document.getElementById('charCounter');
+
+  messageBox.addEventListener('input', function () {
+    const len = this.value.length;
+    charCounter.textContent = len + ' / 300 characters';
+
+    // Change colour as user approaches limit
+    charCounter.classList.remove('warning', 'limit');
+    if (len >= 300) {
+      charCounter.classList.add('limit');
+    } else if (len >= 250) {
+      charCounter.classList.add('warning');
+    }
+  });
+
+
+
+  function showError(fieldId, msg) {
+    const field = document.getElementById(fieldId);
+    const errEl = document.getElementById(fieldId + '-error');
+    if (field) field.classList.add('error');
+    if (errEl) {
+      if (msg) errEl.textContent = msg;
+      errEl.classList.add('visible');
+    }
+  }
+
+  function clearError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errEl = document.getElementById(fieldId + '-error');
+    if (field) field.classList.remove('error');
+    if (errEl) errEl.classList.remove('visible');
+  }
+
+
+  function isValidEmail(email) {
+    // Simple but solid regex
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  ['fullName', 'email', 'university', 'message', 'country'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', function() { clearError(id); });
+      el.addEventListener('change', function() { clearError(id); });
+    }
+  });
+
+  document.querySelectorAll('input[name="courseLevel"]').forEach(function(radio) {
+    radio.addEventListener('change', function() { clearError('courseLevel'); });
+  });
+
+  document.getElementById('leadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    let hasError = false;
+
+    // 1. Full Name — must not be blank, and least 2 chars
+    const name = document.getElementById('fullName').value.trim();
+    if (name.length < 2) {
+      showError('fullName', 'Please enter your full name (at least 2 characters).');
+      hasError = true;
+    } else {
+      clearError('fullName');
+    }
+
+    // 2. Email — must be valid format
+    const email = document.getElementById('email').value.trim();
+    if (!isValidEmail(email)) {
+      showError('email', 'Please enter a valid email address (e.g. name@domain.com).');
+      hasError = true;
+    } else {
+      clearError('email');
+    }
+
+    // 3. Country — must select one
+    const country = document.getElementById('country').value;
+    if (!country) {
+      showError('country', 'Please select your country.');
+      hasError = true;
+    } else {
+      clearError('country');
+    }
+
+    // 4. Course Level — must pick one radio
+    const courseLevelEl = document.querySelector('input[name="courseLevel"]:checked');
+    if (!courseLevelEl) {
+      showError('courseLevel', 'Please select your course level (UG, PG, or PhD).');
+      hasError = true;
+    } else {
+      clearError('courseLevel');
+    }
+
+    // 5. Preferred University — must not be blank
+    const university = document.getElementById('university').value.trim();
+    if (university.length < 2) {
+      showError('university', 'Please enter a preferred university name.');
+      hasError = true;
+    } else {
+      clearError('university');
+    }
+
+    // 6. Message — at least 10 characters
+    const message = document.getElementById('message').value.trim();
+    if (message.length < 10) {
+      showError('message', 'Please enter a message (at least 10 characters).');
+      hasError = true;
+    } else {
+      clearError('message');
+    }
+
+    if (hasError) return;
+
+    const formData = {
+      fullName: name,
+      email: email,
+      country: country,
+      courseLevel: courseLevelEl.value,
+      preferredUniversity: university,
+      message: message,
+      submittedAt: new Date().toISOString()
+    };
+    
+    console.log('=== Student Lead Form Submitted ===');
+    console.log(JSON.stringify(formData, null, 2));
+    
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('thank-you').style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
